@@ -1,14 +1,12 @@
 // credit : http://bl.ocks.org/nbremer/6506614
 import React, { Component } from 'react';
-import SocialTone from '../containers/SocialTone';
-import EmotionTone from '../containers/EmotionTone';
-import LanguageTone from '../containers/LanguageTone';
+import { connect } from 'react-redux';
 
 class Radar extends Component {
   constructor(props){
     super(props);
   }
-
+  //Function that
   drawRadarChart(id, d, options) {
     let cfg = {
       radius: 5,
@@ -220,16 +218,37 @@ class Radar extends Component {
            .style('font-size', '13px');
 
   }
-
+  componentWillReceiveProps (newProps) {
+    if(newProps.watsonSentiment.document_tone){
+      let emotionTone;
+      let result = newProps.watsonSentiment.document_tone.tone_categories;
+      let self = this;
+      let mycfg = {w:500, h:500, maxValue:0, levels:10};
+      result.forEach(function(emotion){
+        const data = [];
+        const category = emotion.category_id;
+        emotion.tones.forEach(function(tone){
+          data.push({axis:tone.tone_name,value:tone.score});
+        });
+        self.drawRadarChart(`#${category}`, [data], mycfg);
+      });
+    };
+  }
   render () {
     return (
       <div id="radar">
-        <SocialTone drawRadarChart = {this.drawRadarChart} />
-        <EmotionTone drawRadarChart = {this.drawRadarChart} />
-        <LanguageTone drawRadarChart = {this.drawRadarChart} />
+        <div id="emotion_tone"></div>
+        <div id="language_tone"></div>
+        <div id="social_tone"></div>
       </div>
     );
   }
 }
 
-export default Radar;
+function mapStateToProps(state) {
+  return {
+    watsonSentiment: state.watsonSentiment
+  };
+}
+
+export default connect(mapStateToProps)(Radar);

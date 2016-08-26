@@ -11,6 +11,7 @@ import ResetPasswordPage from './components/ResetPasswordPage';
 import ProfilePage from './containers/ProfilePage';
 import Team from './components/Team';
 
+
 export default (
   <Route path="/" component={App}>
     <IndexRoute component={Home} />
